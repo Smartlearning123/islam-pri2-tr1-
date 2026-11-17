@@ -451,6 +451,7 @@ button:focus-visible{outline:4px solid #3b82f6;outline-offset:2px}
 .ivc hr{border:0;border-top:1px solid rgba(128,128,128,.3);margin:14px 0}
 .ivb{display:block;border:0;border-radius:12px;padding:10px 28px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;margin:14px auto 0;text-align:center;background:#e5e7eb;color:#1f2937}
 .ic.ic-in{background:linear-gradient(180deg,#93c5fd,#3b82f6 50%,#1d4ed8);border-color:#1e3a8a;box-shadow:inset 0 5px 7px rgba(255,255,255,.5),0 5px 0 #1e3a8a,0 9px 12px rgba(30,58,138,.3)}
+.ivd{display:block;margin:10px auto 0;background:none;border:0;color:var(--soft,#5b6680);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:6px}
 .ic.ic-in:active{box-shadow:inset 0 5px 7px rgba(255,255,255,.5),0 1px 0 #1e3a8a}
 .ic.wlin{position:absolute;top:100px;left:max(12px,calc(50% - 248px));width:46px;height:46px;margin:0;z-index:5}
 .ic.wlin svg{width:22px;height:22px}
@@ -989,6 +990,8 @@ const _home=home;home=function(){_home();const q=qst();if(LASTOPEN&&q.rt!==new D
 /* نافذة خطوات إضافة التطبيق للشاشة الرئيسية: مرة في اليوم، من غير تثبيت ولا ملفات إضافية */
 (function(){
  var KEY='inst_day_g2';
+ var OK=KEY.replace('inst_day','inst_ok');
+ function done(){try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||localStorage.getItem(OK)==='1'}catch(e){return false}}
  function steps(){
   if(document.querySelector('.ivo')||document.querySelector('.rv'))return false;
   var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -996,15 +999,15 @@ const _home=home;home=function(){_home();const q=qst();if(LASTOPEN&&q.rt!==new D
   var A='<h3>📱 أندرويد (متصفح Chrome)</h3>'+L(['افتح الموقع من متصفح Chrome','اضغط على النقاط الثلاث ⋮ أعلى الشاشة','اختار «إضافة إلى الشاشة الرئيسية»','اضغط «إضافة» وهتلاقي الأيقونة على الشاشة الرئيسية']);
   var I='<h3>آيفون وآيباد (متصفح Safari)</h3>'+L(['افتح الموقع من متصفح Safari','اضغط زرار المشاركة ⬆️ (المربع والسهم) تحت الشاشة','اسحب لتحت واختار «إضافة إلى الشاشة الرئيسية»','اضغط «إضافة» وهتلاقي الأيقونة على الشاشة الرئيسية']);
   var d=document.createElement('div');d.className='ivo';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');
-  d.innerHTML='<div class="ivc"><h2>ثبّت التطبيق على موبايلك 📲</h2><p>هتفتحه من أيقونة على الشاشة الرئيسية زي أي تطبيق</p><hr>'+(ios?I+'<hr>'+A:A+'<hr>'+I)+'<p class="itp">لو مش لاقي الخيار: افتح الموقع من المتصفح مش من داخل تطبيق تاني (فيسبوك أو واتساب)</p><button type="button" class="ivb" id="ivx">حسنًا</button></div>';
+  d.innerHTML='<div class="ivc"><h2>ثبّت التطبيق على موبايلك 📲</h2><p>هتفتحه من أيقونة على الشاشة الرئيسية زي أي تطبيق</p><hr>'+(ios?I+'<hr>'+A:A+'<hr>'+I)+'<p class="itp">لو مش لاقي الخيار: افتح الموقع من المتصفح مش من داخل تطبيق تاني (فيسبوك أو واتساب)</p><button type="button" class="ivb" id="ivx">حسنًا</button><button type="button" class="ivd" id="ivd">أضفت التطبيق بالفعل ✓</button></div>';
   document.body.appendChild(d);
   d.querySelector('#ivx').onclick=function(){d.remove()};
+  d.querySelector('#ivd').onclick=function(){try{localStorage.setItem(OK,'1')}catch(e){}d.remove();var b=document.getElementById('ins');if(b)b.remove()};
   d.onclick=function(e){if(e.target===d)d.remove()};
   return true;
  }
  setTimeout(function(){try{
-  var sa=false;try{sa=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){}
-  if(sa)return;
+  if(done())return;
   var day=new Date().toDateString();
   if(localStorage.getItem(KEY)===day)return;
   if(steps())localStorage.setItem(KEY,day);
@@ -1015,7 +1018,7 @@ const _home=home;home=function(){_home();const q=qst();if(LASTOPEN&&q.rt!==new D
  function sync(){try{
   var app=document.getElementById('app');if(!app)return;
   var n=app.querySelector('.wlh.hn'),b=document.getElementById('ins');
-  if(!n){if(b)b.remove();return}
+  if(!n||done()){if(b)b.remove();return}
   if(!b){b=document.createElement('button');b.type='button';b.id='ins';b.className='ic ic-in wlin';b.setAttribute('aria-label','طريقة إضافة التطبيق للشاشة الرئيسية');b.innerHTML=IC;b.onclick=function(){steps()};app.appendChild(b);[250,700,1500].forEach(function(t){setTimeout(q,t)})}
   pos(b,n);
  }catch(e){}}
